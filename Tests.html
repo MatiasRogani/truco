@@ -1,0 +1,31 @@
+
+<meta charset="utf-8" />
+<script src="Truco.js"></script>
+<script>
+
+
+	//Primera Mano (Juego)
+	//Mano es el primer jugador
+	var juego = new Juego("Matias", "Anto")
+	
+// Test Empate 1ra ronda, desempata No mano
+		
+	juego.jugadores[0].cartas = [cartas[5], cartas[9], cartas[13]];
+	juego.jugadores[1].cartas = [cartas[6], cartas[10], cartas[14]];
+	
+	juego.Ver();
+	
+	juego.TirarCarta(1);
+	juego.TirarCarta(1);
+	juego.TirarCarta(1);
+	juego.TirarCarta(2);
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 1, 'Falla test Empate (desempate segunda ronda)'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Empate (desempate segunda ronda)');
+
+
+
+
+
+
+</script>
