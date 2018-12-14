@@ -103,10 +103,7 @@ class Juego {
 
 	}
 	
-	VerPuntajes(){
-		console.log(`Puntaje de ${this.jugadores[0].nombre}: ${this.jugadores[0].puntajeMalas} Malas - ${this.jugadores[0].puntajeBuenas} Buenas`);
-		console.log(`Puntaje de ${this.jugadores[1].nombre}: ${this.jugadores[1].puntajeMalas} Malas - ${this.jugadores[1].puntajeBuenas} Buenas`);
-	}
+
 
 	
 }
@@ -194,6 +191,9 @@ class Mano {
 				case eFinal.PERDIO:
 					this.jugadores[1].agregarPuntaje(this._getPuntajeApuestas(this.apuestasTruco));
 					console.log(`Ganó la mano el equipo del jugador ${this.jugadores[1].nombre}`);
+				
+
+				
 				break;
 			}
 			
@@ -298,12 +298,20 @@ class Mano {
 
 	
 	Ver(){
-		console.log('Cartas en la Mesa:');
+		console.log('**** Puntos ****');
+		this.VerPuntajes();
+		console.log('**** Cartas en la Mesa ****');
 		this.VerMesa();
-		console.log('Cartas en Mano:');
+		console.log('**** Cartas en Mano ****');
 		this.VerMano();
-		console.log('Lances disponibles:');
+		console.log('**** Lances disponibles ****');
 		this.VerApuestas();
+		console.log('Indique que desea hacer:');
+	}
+	
+	VerPuntajes(){
+		console.log(`Puntaje de ${this.jugadores[0].nombre}: ${this.jugadores[0].puntajeMalas} Malas - ${this.jugadores[0].puntajeBuenas} Buenas`);
+		console.log(`Puntaje de ${this.jugadores[1].nombre}: ${this.jugadores[1].puntajeMalas} Malas - ${this.jugadores[1].puntajeBuenas} Buenas`);
 	}
 	
 	VerMesa(){
@@ -579,7 +587,7 @@ class Mano {
 		
 		let puntaje = 0;
 		for (let i = 0; i < apuestas.length - 1; i++){
-			puntaje += matrizApuestas[i][i + 1];
+			puntaje += matrizApuestas[apuestas[i]][apuestas[i + 1]];
 		}
 		return puntaje;
 		
@@ -789,9 +797,9 @@ matrizApuestas[5] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',
 matrizApuestas[6] = [	'',	'',	'',	'',	'',	'',	'',	1,	'',	1,	'',	'',	'',	'',	'',	''];
 matrizApuestas[7] = [	'',	'',	'',	'',	'',	'',	'',	'',	1,	1,	'',	'',	'',	'',	'',	''];
 matrizApuestas[8] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	''];
-matrizApuestas[9] = [	'',	1,	'',	1,	1,	'',	'',	'',	'',	'',	1,	'',	1,	'',	'',	1];
-matrizApuestas[10] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	1,	'',	1];
-matrizApuestas[11] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	1];
+matrizApuestas[9] = [	'',	1,	'',	1,	1,	'',	'',	'',	'',	'',	1,	'',	1,	'',	'',	0];
+matrizApuestas[10] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	1,	'',	0];
+matrizApuestas[11] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	0];
 matrizApuestas[12] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	''];
 matrizApuestas[13] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	''];
 matrizApuestas[14] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
