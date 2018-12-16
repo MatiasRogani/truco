@@ -1,0 +1,28 @@
+<meta charset="utf-8" />
+<script src="Truco.js"></script>
+<script>
+
+// Test MeVoy1
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego.jugadores[0].cartas = [cartas[4], cartas[8], cartas[12]];
+	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
+	
+	juego.MeVoyAlMaso();
+	
+	console.assert(juego.jugadores[0].puntajeMalas == 2, 'Falla test MeVoy1'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[1].puntajeMalas == 0, 'Falla test MeVoy1');	
+	
+	juego.TirarCarta(1);
+	
+	juego.MeVoyAlMaso();
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 3, 'Falla test MeVoy1'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test MeVoy1');	
+	
+	
+	}		
+
+</script>
+

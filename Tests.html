@@ -6,26 +6,228 @@
 
 	//Primera Mano (Juego)
 	//Mano es el primer jugador
-	var juego = new Juego("Matias", "Anto")
 	
-// Test Empate 1ra ronda, desempata No mano
-		
-	juego.jugadores[0].cartas = [cartas[5], cartas[9], cartas[13]];
-	juego.jugadores[1].cartas = [cartas[6], cartas[10], cartas[14]];
+	
+// Test Empate1
+	
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego.jugadores[0].cartas = [cartas[4], cartas[8], cartas[12]];
+	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
 	
 	juego.Ver();
 	
 	juego.TirarCarta(1);
 	juego.TirarCarta(1);
+	console.assert(juego._mano.iJugadorActual == 0, 'Fallo en el cambio de jugador cuando empatan (el siguiente debe ser la mano)');
+	
 	juego.TirarCarta(1);
 	juego.TirarCarta(2);
 	
-	console.assert(juego.jugadores[1].puntajeMalas == 1, 'Falla test Empate (desempate segunda ronda)'); //Recordar que cambia de Juego!! Asi que invierten jugadores
-	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Empate (desempate segunda ronda)');
+	console.assert(juego.jugadores[1].puntajeMalas == 1, 'Falla test Empate1'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Empate1');
 
+	}
 
+// Test Empate 1ra ronda, desempata No mano	
+	
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego.jugadores[0].cartas = [cartas[4], cartas[8], cartas[12]];
+	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
+	
+	juego.Ver();
+	
+	juego.TirarCarta(1);
+	juego.TirarCarta(1);
+	juego.TirarCarta(2);
+	juego.TirarCarta(1);
+	
+	console.assert(juego.jugadores[0].puntajeMalas == 1, 'Falla test Empate (desempate segunda ronda, Gana jugador 0)'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[1].puntajeMalas == 0, 'Falla test Empate (desempate segunda ronda, Gana jugador 0)');
 
+	}	
+	
+// Test Empate de las 3 rondas (debe ganar mano)
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego.jugadores[0].cartas = [cartas[4], cartas[8], cartas[12]];
+	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
+	
+	juego.Ver();
+	
+	juego.TirarCarta(1);
+	juego.TirarCarta(1);
+	juego.TirarCarta(2);
+	juego.TirarCarta(2);
+	juego.TirarCarta(1);
+	juego.TirarCarta(1);	
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 1, 'Falla test Empate (desempate segunda ronda, Gana jugador 0)'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Empate (desempate segunda ronda, Gana jugador 0)');
 
+	}	
+	
+// Test Empate 2ra ronda, desempata 3ra
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego.jugadores[0].cartas = [cartas[5], cartas[9], cartas[13]];
+	juego.jugadores[1].cartas = [cartas[6], cartas[10], cartas[18]];
+	
+	juego.Ver();
+	
+	juego.TirarCarta(1);
+	juego.TirarCarta(1);
+	juego.TirarCarta(2);
+	juego.TirarCarta(2);
+	juego.TirarCarta(1);
+	juego.TirarCarta(1);	
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 1, 'Falla test Empate (desempate segunda ronda, Gana jugador 0)'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Empate (desempate segunda ronda, Gana jugador 0)');
 
+	}	
 
+// Test Envido1
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego.jugadores[0].cartas = [cartas[4], cartas[8], cartas[12]];
+	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
+	
+	juego.CantarApuesta("Envido");
+	juego.CantarApuesta("No Quiero");
+	
+	console.assert(juego.jugadores[0].puntajeMalas == 1, 'Falla test Envido1'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[1].puntajeMalas == 0, 'Falla test Envido1');
+
+	}
+	
+// Test Envido2
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego.jugadores[0].cartas = [cartas[4], cartas[8], cartas[12]];
+	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
+	
+	juego.CantarApuesta("Envido");
+	juego.CantarApuesta("Envido");
+	juego.CantarApuesta("No quiero");
+	
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Envido2'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[1].puntajeMalas == 2, 'Falla test Envido2');
+
+	}
+	
+	
+// Test Envido3
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego.jugadores[0].cartas = [cartas[4], cartas[8], cartas[12]];
+	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
+	
+	juego.CantarApuesta("Envido");
+	juego.CantarApuesta("Envido");
+	juego.CantarApuesta("quiero");	
+	
+	console.assert(juego.jugadores[0].puntajeMalas == 4, 'Falla test Envido3'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[1].puntajeMalas == 0, 'Falla test Envido3');
+
+	}		
+// Test Envido4
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego.jugadores[0].cartas = [cartas[5], cartas[9], cartas[13]];
+	juego.jugadores[1].cartas = [cartas[6], cartas[10], cartas[34]];
+	
+	juego.CantarApuesta("Envido");
+	juego.CantarApuesta("Envido");
+	juego.CantarApuesta("quiero");	
+	
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Envido4'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[1].puntajeMalas == 4, 'Falla test Envido4');
+
+	}
+	
+// Test Envido5
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego.jugadores[0].cartas = [cartas[4], cartas[8], cartas[34]];
+	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
+	
+	juego.CantarApuesta("Envido");
+	juego.CantarApuesta("real envido");
+	juego.CantarApuesta("quiero");	
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 0, 'Falla test Envido5'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[0].puntajeMalas == 5, 'Falla test Envido5');
+
+	}	
+
+// Test Truco1
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego.jugadores[0].cartas = [cartas[4], cartas[8], cartas[12]];
+	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
+	
+	juego.CantarApuesta("Envido");
+	juego.CantarApuesta("real envido");
+	juego.CantarApuesta("quiero");	
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 0, 'Falla test Truco1'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[0].puntajeMalas == 5, 'Falla test Truco1');
+	
+	juego.TirarCarta(2);
+	juego.TirarCarta(1);
+
+	juego.CantarApuesta("truco");
+	juego.CantarApuesta("retruco");
+	juego.CantarApuesta("quiero");
+	
+	juego.TirarCarta(2);
+	juego.TirarCarta(1);
+
+	juego.TirarCarta(1);
+	
+	juego.CantarApuesta("vale cuatro");
+	juego.CantarApuesta("quiero");
+
+	juego.TirarCarta(1);	
+	
+	console.assert(juego.jugadores[0].puntajeMalas == 4, 'Falla test Truco1'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[1].puntajeMalas == 5, 'Falla test Truco1');	
+
+	}	
+	
+// Test MeVoy1
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego.jugadores[0].cartas = [cartas[4], cartas[8], cartas[12]];
+	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
+	
+	juego.MeVoyAlMaso();
+	
+	console.assert(juego.jugadores[0].puntajeMalas == 2, 'Falla test MeVoy1'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[1].puntajeMalas == 0, 'Falla test MeVoy1');	
+	
+	juego.TirarCarta(1);
+	
+	juego.MeVoyAlMaso();
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 3, 'Falla test MeVoy1'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test MeVoy1');	
+	
+	
+	}		
+	
+	
 </script>

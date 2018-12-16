@@ -11,6 +11,8 @@
 //Faltan dos cosas Principales
 //- Puntaje Falta Envido
 //- Trabajar con flor
+//- cantar truco y te lo interrumpan con un envido. que despues continue el truco
+//- cantar truco y envido al mismo tiempo
 
 
 class Baraja {
@@ -89,6 +91,8 @@ class Juego {
 		//Si nadie ganó, se genera una nueva Mano del juego.
 		if (iJugadorGanador == null){
 			let nuevaMano = new Mano(this.jugadores, new Baraja(cartas), this.nextMano.bind(this));
+			
+			this._mano = nuevaMano; //Para fines de testeo
 			
 			this.VerMesa = nuevaMano.VerMesa.bind(nuevaMano);
 			this.VerMano = nuevaMano.VerMano.bind(nuevaMano);
@@ -196,19 +200,29 @@ class Mano {
 		}
 		else{ //Se obtuvo un resultado para la mano
 		
-			this.iJugadorActual = null;
+			this.iJugadorActual = null; //Recoradr que resultado es relativo al jugador mano.
+			
+			let puntaje = 0;
 			
 			switch (resultado){
 				case eFinal.GANO:
-					this.jugadores[0].agregarPuntaje(this._getPuntajeApuestas(this.apuestasTruco));
+					
+					if (this.apuestasTruco.length < 2) //Para evitar que si no se canto ninguna apuesta (length = 0) la matriz no asigne puntaje
+						puntaje = 1;
+					else
+						puntaje = this._getPuntajeApuestas(this.apuestasTruco);
+
+					this.jugadores[0].agregarPuntaje(puntaje);
 					console.log(`Ganó la mano el equipo del jugador ${this.jugadores[0].nombre}`);
 				break;
 				case eFinal.PERDIO:
-					this.jugadores[1].agregarPuntaje(this._getPuntajeApuestas(this.apuestasTruco));
+					if (this.apuestasTruco.length < 2) //Para evitar que si no se canto ninguna apuesta (length = 0) la matriz no asigne puntaje
+						puntaje = 1;
+					else
+						puntaje = this._getPuntajeApuestas(this.apuestasTruco);
+					
+					this.jugadores[1].agregarPuntaje(puntaje);
 					console.log(`Ganó la mano el equipo del jugador ${this.jugadores[1].nombre}`);
-				
-
-				
 				break;
 			}
 			
@@ -502,8 +516,13 @@ class Mano {
 		if (equipoGanador >= 2) equipoGanador = 0;
 		
 		//Para que si se va al mazo sin cantar, se le sumen dos puntos.
-		let puntaje = this._getPuntajeApuestas(this.apuestasTruco);
-		if (this.iRonda == 0 && puntaje < 2) puntaje = 2;
+		let puntaje;
+		if (this.apuestasTruco.length < 2)
+			puntaje = 1;
+		else
+			puntaje = this._getPuntajeApuestas(this.apuestasTruco);
+
+		if (this.iRondaActual == 0 && this.iJugadorActual == 0 && puntaje < 2) puntaje = 2;
 		
 		this.jugadores[equipoGanador].agregarPuntaje(puntaje);
 		
@@ -659,7 +678,7 @@ class Jugador {
 	}
 	
 	agregarPuntaje(puntaje){
-		this.puntajeMalas += 1;
+		this.puntajeMalas += puntaje;
 		if (this.puntajeMalas > PUNTOS_MALAS) this.puntajeBuenas += (this.puntajeMalas - PUNTOS_MALAS);
 	}
 	
@@ -813,14 +832,14 @@ matrizApuestas[2] = [	'',	'',	'',	2,	2,	0,	2,	'',	'',	'',	'',	'',	'',	'',	'',	''
 matrizApuestas[3] = [	'',	'',	'',	'',	3,	0,	3,	'',	'',	'',	'',	'',	'',	'',	'',	''];
 matrizApuestas[4] = [	'',	'',	'',	'',	'',	0,	5,	'',	'',	'',	'',	'',	'',	'',	'',	''];
 matrizApuestas[5] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	''];
-matrizApuestas[6] = [	'',	'',	'',	'',	'',	'',	'',	1,	'',	1,	'',	'',	'',	'',	'',	''];
-matrizApuestas[7] = [	'',	'',	'',	'',	'',	'',	'',	'',	1,	1,	'',	'',	'',	'',	'',	''];
+matrizApuestas[6] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	''];
+matrizApuestas[7] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	''];
 matrizApuestas[8] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	''];
 matrizApuestas[9] = [	'',	1,	'',	1,	1,	'',	'',	'',	'',	'',	1,	'',	1,	'',	'',	0];
 matrizApuestas[10] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	1,	'',	0];
 matrizApuestas[11] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	0];
-matrizApuestas[12] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	''];
-matrizApuestas[13] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	''];
+matrizApuestas[12] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	0,	'',	'',	'',	'',	''];
+matrizApuestas[13] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	0,	'',	'',	'',	''];
 matrizApuestas[14] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
 matrizApuestas[15] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
 
