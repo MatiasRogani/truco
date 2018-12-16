@@ -2,27 +2,32 @@
 <script src="Truco.js"></script>
 <script>
 
-// Test MeVoy1
+	// Test FaltaEnvido3
+	// Jugadores en Buenas
+	// el jugador o pareja ganadora se lleva los puntos que le faltan al jugador o pareja con más puntos para conseguir el chico.
 	{	
 	let juego = new Juego("Matias", "Anto")
 	
-	juego.jugadores[0].cartas = [cartas[4], cartas[8], cartas[12]];
+	juego.jugadores[0].cartas = [cartas[24], cartas[8], cartas[12]];
 	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
 	
-	juego.MeVoyAlMaso();
+	juego.jugadores[1].puntajeMalas = 14;
 	
-	console.assert(juego.jugadores[0].puntajeMalas == 2, 'Falla test MeVoy1'); //Recordar que cambia de Juego!! Asi que invierten jugadores
-	console.assert(juego.jugadores[1].puntajeMalas == 0, 'Falla test MeVoy1');	
+	juego.jugadores[0].puntajeMalas = 15;
+	juego.jugadores[0].puntajeBuenas = 10;
+	
 	
 	juego.TirarCarta(1);
+	juego.CantarApuesta("Falta Envido");
+	juego.CantarApuesta("Quiero");
 	
-	juego.MeVoyAlMaso();
+	console.assert(juego.jugadores[1].puntajeMalas == 15, 'Falla test FaltaEnvido3'); 
+	console.assert(juego.jugadores[1].puntajeBuenas == 4, 'Falla test FaltaEnvido3'); 
+	console.assert(juego.jugadores[0].puntajeMalas == 15, 'Falla test FaltaEnvido3');	
+	console.assert(juego.jugadores[0].puntajeBuenas == 10, 'Falla test FaltaEnvido3');
 	
-	console.assert(juego.jugadores[1].puntajeMalas == 3, 'Falla test MeVoy1'); //Recordar que cambia de Juego!! Asi que invierten jugadores
-	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test MeVoy1');	
 	
-	
-	}		
+	}	
 
 </script>
 

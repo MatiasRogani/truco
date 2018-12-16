@@ -48,6 +48,8 @@ class Juego {
 		
 		this.jugadores = [new Jugador(nombreJugador1), new Jugador(nombreJugador2)];
 		
+		this._iJugadorGanador;
+		
 		//console.clear();
 		console.log('');
 		console.log('Para jugar, tiene disponibles los siguientes comandos:');
@@ -71,13 +73,7 @@ class Juego {
 	
 	nextMano(){
 		
-		//Se cambia el jugador mano en el arreglo jugadores
-		var jugadoresEnNuevaPosicion = [];
-		for (let i = 0, j = 1; i < this.jugadores.length; i++, j++ ){
-			if (j == this.jugadores.length) j = 0;
-			jugadoresEnNuevaPosicion[i] = this.jugadores[j];
-		}
-		this.jugadores = jugadoresEnNuevaPosicion;
+
 		
 		//¿Gano alguien? (¿llego algun jugador al puntaje para ganar?)
 		let iJugadorGanador = null;
@@ -90,6 +86,15 @@ class Juego {
 		
 		//Si nadie ganó, se genera una nueva Mano del juego.
 		if (iJugadorGanador == null){
+			
+			//Se cambia el jugador mano en el arreglo jugadores
+			var jugadoresEnNuevaPosicion = [];
+			for (let i = 0, j = 1; i < this.jugadores.length; i++, j++ ){
+				if (j == this.jugadores.length) j = 0;
+				jugadoresEnNuevaPosicion[i] = this.jugadores[j];
+			}
+			this.jugadores = jugadoresEnNuevaPosicion;			
+			
 			let nuevaMano = new Mano(this.jugadores, new Baraja(cartas), this.nextMano.bind(this));
 			
 			this._mano = nuevaMano; //Para fines de testeo
@@ -105,7 +110,16 @@ class Juego {
 	
 		}
 		else{
-			console.log(`Ganó el Partido el jugador ${this.jugadores[i].nombre}`)
+			
+			this._JugadorGanador = this.jugadores[iJugadorGanador];
+			
+			this.VerApuestas = function(){console.log = "El partido a terminado";};
+			this.VerJugadorEnTurno = function(){console.log = "El partido a terminado";};
+			this.TirarCarta = function(){console.log = "El partido a terminado";};
+			this.CantarApuesta = function(){console.log = "El partido a terminado";};
+			this.MeVoyAlMaso = function(){console.log = "El partido a terminado";};
+			
+			console.log(`Ganó el Partido el jugador ${this._JugadorGanador.nombre}`)
 		}
 
 	}
@@ -449,10 +463,12 @@ class Mano {
 						equipoGanador = this._ganadorEnvido() % 2;
 					}
 
-					this.jugadores[equipoGanador].agregarPuntaje(this._getPuntajeApuestas(this.apuestasEnvido));
-					
 					this.bDisputaEnvido = false;
-					this.iJugadorActual = this.iIniciadorEnvido;
+					this.iJugadorActual = this.iIniciadorEnvido;					
+					
+					let gano = this.jugadores[equipoGanador].agregarPuntaje(this._getPuntajeApuestas(this.apuestasEnvido));
+					//No espera a qu termine la Baza (ronda) para asignar puntajes. Se verifica si alguien gano ahora.
+					if (gano) this.conQueContinuo();
 					
 				}
 				break;
@@ -538,7 +554,12 @@ class Mano {
 		let jugadorPuntajMasAlto = 0;
 		for (let i = 0, j = this.iIniciadorEnvido; i < this.jugadores.length; i++, j++){
 			
-			let puntaje = this._valorEnvido(this.jugadores[j].cartas);
+			if (j >= this.jugadores.length) j = 0;
+			
+			//Calculo del envido con cartas en mano y en mesa
+			let cartas = this.jugadores[j].cartas.concat(this.cartasEnMesa[0][j]);
+			
+			let puntaje = this._valorEnvido(cartas);
 			if (puntaje > puntajeMasAlto){
 				console.log(`${this.jugadores[j].nombre} canta: ${puntaje}.`);
 				puntajeMasAlto = puntaje;
@@ -623,6 +644,32 @@ class Mano {
 	_getPuntajeApuestas(apuestas){
 		
 		let puntaje = 0;
+		
+		//Tratamiento de la falta
+		for (let i = 0; i < apuestas.length - 1; i++){
+			if (apuestas[i] == 4 && apuestas[i + 1] == 6){ //Se cantó la falta
+				
+				let iJugadorMayoPuntaje;
+				let mayorPuntaje = 0;
+				for (let j = 0; j < this.jugadores.length; j++){ // Buscamos el jugador con mas puntaje
+					let puntaje = this.jugadores[j].puntajeMalas + this.jugadores[j].puntajeBuenas;
+					if (puntaje > mayorPuntaje) {
+						mayorPuntaje = puntaje;
+						iJugadorMayoPuntaje = j;
+					}
+				}
+				if (mayorPuntaje > PUNTOS_MALAS) { //Si un jugador esta en buenas
+					puntaje = PUNTOS_BUENAS - ( mayorPuntaje - PUNTOS_MALAS);
+				}
+				else{
+					puntaje = PUNTOS_MALAS + PUNTOS_BUENAS;
+				}
+				return puntaje;
+			}
+		}
+		
+		
+		
 		for (let i = 0; i < apuestas.length - 1; i++){
 			puntaje += matrizApuestas[apuestas[i]][apuestas[i + 1]];
 		}
@@ -679,7 +726,11 @@ class Jugador {
 	
 	agregarPuntaje(puntaje){
 		this.puntajeMalas += puntaje;
-		if (this.puntajeMalas > PUNTOS_MALAS) this.puntajeBuenas += (this.puntajeMalas - PUNTOS_MALAS);
+		if (this.puntajeMalas > PUNTOS_MALAS) {
+			this.puntajeBuenas += (this.puntajeMalas - PUNTOS_MALAS);
+			this.puntajeMalas = 15;
+		}
+		if (this.puntajeBuenas >= PUNTOS_BUENAS) return true;
 	}
 	
 }
@@ -777,8 +828,8 @@ matrizResultados[eResultado.PERDIO][eResultado.EMPATE] = eFinal.PERDIO;
 matrizResultados[eResultado.PERDIO][eResultado.PERDIO] = eFinal.PERDIO;
 
 
-PUNTOS_MALAS = 5;
-PUNTOS_BUENAS = 5;
+PUNTOS_MALAS = 15;
+PUNTOS_BUENAS = 15;
 
 class Apuesta {
 	constructor (codigo, descripcion, opciones){
