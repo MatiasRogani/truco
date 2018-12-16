@@ -9,10 +9,9 @@
 
 
 //Faltan dos cosas Principales
-//- Puntaje Falta Envido
 //- Trabajar con flor
 //- cantar truco y te lo interrumpan con un envido. que despues continue el truco
-//- cantar truco y envido al mismo tiempo
+
 
 
 class Baraja {
@@ -44,11 +43,12 @@ class Baraja {
 
 
 class Juego {
-	constructor (nombreJugador1,nombreJugador2){
+	constructor (nombreJugador1,nombreJugador2, conFlor){
 		
 		this.jugadores = [new Jugador(nombreJugador1), new Jugador(nombreJugador2)];
 		
 		this._iJugadorGanador;
+		this._conFlor = conFlor;
 		
 		//console.clear();
 		console.log('');
@@ -95,7 +95,7 @@ class Juego {
 			}
 			this.jugadores = jugadoresEnNuevaPosicion;			
 			
-			let nuevaMano = new Mano(this.jugadores, new Baraja(cartas), this.nextMano.bind(this));
+			let nuevaMano = new Mano(this.jugadores, new Baraja(cartas), this._conFlor, this.nextMano.bind(this));
 			
 			this._mano = nuevaMano; //Para fines de testeo
 			
@@ -130,7 +130,7 @@ class Juego {
 }
 
 class Mano {
-	constructor (jugadores, baraja, conQueContinuo){
+	constructor (jugadores, baraja, conFlor, conQueContinuo){
 		
 		//¿Que debe hacerse cuando termina esta mano?
 		this.conQueContinuo = conQueContinuo;
@@ -139,6 +139,9 @@ class Mano {
 		this.cantidadCartasPorJugador = 3;
 		
 		this.jugadores = jugadores;
+		
+		this._conFlor = conFlor;
+		
 		//Repartida de cartas entre jugadores
 		this.jugadores.forEach(j => j.cartas = baraja.RepartirCartas(this.cantidadCartasPorJugador));
 		
@@ -153,7 +156,8 @@ class Mano {
 		this.iRondaActual = 0;
 		this.iApuestaActual = 0;
 		
-		this.bDisputaEnvido = false;
+		this.bDisputaFlor = false;
+		this.bYaSeDisputoEnvidoFlor = false;
 		this.apuestasEnvido = [0];
 		this.iIniciadorEnvido = null;
 		
@@ -174,8 +178,16 @@ class Mano {
 		if (this.iJugadorActual == null) return;
 		
 		console.log(`Es el turno de ${this.jugadores[this.iJugadorActual].nombre}.`);
+		
+		//?
 		this.Ver();
 		
+		//Si se juega con flor, y es la ronda 0 se lanza automaticamente la flor
+		if (this._conFlor && this.iRondaActual == 0 && !this.bDisputaFlor && !this.bYaSeDisputoEnvidoFlor){
+			if (this._tieneFlor(this.iJugadorActual)) this.CantarApuesta("flor");
+			return;
+		}
+
 	}
 	
 	
@@ -464,15 +476,82 @@ class Mano {
 					}
 
 					this.bDisputaEnvido = false;
+					this.bYaSeDisputoEnvidoFlor = true;
 					this.iJugadorActual = this.iIniciadorEnvido;					
 					
 					let gano = this.jugadores[equipoGanador].agregarPuntaje(this._getPuntajeApuestas(this.apuestasEnvido));
 					//No espera a qu termine la Baza (ronda) para asignar puntajes. Se verifica si alguien gano ahora.
 					if (gano) this.conQueContinuo();
 					
+					if (this.bDisputaTruco) { //Alguien habia iniciado el truco antes de cantar envido
+						this.apuestasTruco.pop(); //Se elimina el canto de truco y se recanta
+						this.iJugadorActual = this.iIniciadorTruco;
+						this.CantarApuesta("Truco");
+						return;
+					}
+					
 				}
 				break;
+			case eTipoApuesta.FLOR:
 				
+				this.apuestasEnvido.push(apuesta.codigo);
+				
+				if (!this.bDisputaEnvido){
+					this.iIniciadorEnvido = this.iJugadorActual;
+				}
+				
+				//Cambio con respeco al envido
+				//Si el jugador conrtario no posee flor entonces gana automaticamente
+				let iProximoJugador = this.iJugadorActual + 1;
+				if (iProximoJugador == this.jugadores.length) iProximoJugador = 0;
+				if (! this._tieneFlor(iProximoJugador)){
+					
+					this.iJugadorActual ++;
+					if (this.iJugadorActual == this.jugadores.length) this.iJugadorActual = 0;
+					this.iApuestaActual = 20; //Equivale a un No Quiero del otro, pero sin que lo cante
+					apuesta = ColeccionApuestas['20'];
+				}				
+				
+				
+				//Si no espera respuesta en envido, es porque termino la disputa del envido
+				if (apuesta.opciones.esperaRespuesta){
+					this.bDisputaEnvido = true;
+					this.bDisputaFlor = true;
+					
+					this.iJugadorActual ++;
+					if (this.iJugadorActual == this.jugadores.length) this.iJugadorActual = 0;	
+					
+				}
+				else
+				{
+					
+					let equipoGanador = 0;
+					if (apuesta.opciones.dadoPorVencido){
+						equipoGanador = (this.iJugadorActual % 2) + 1;
+						if (equipoGanador >= 2) equipoGanador = 0;
+					}
+					else {
+						equipoGanador = this._ganadorFlor() % 2;
+					}
+
+					this.bDisputaEnvido = false;
+					this.bDisputaFlor = false;
+					this.bYaSeDisputoEnvidoFlor = true;
+					this.iJugadorActual = this.iIniciadorEnvido;					
+					
+					let gano = this.jugadores[equipoGanador].agregarPuntaje(this._getPuntajeApuestas(this.apuestasEnvido));
+					//No espera a qu termine la Baza (ronda) para asignar puntajes. Se verifica si alguien gano ahora.
+					if (gano) this.conQueContinuo();
+					
+					if (this.bDisputaTruco) { //Alguien habia iniciado el truco antes de cantar envido
+						this.apuestasTruco.pop(); //Se elimina el canto de truco y se recanta
+						this.iJugadorActual = this.iIniciadorTruco;
+						this.CantarApuesta("Truco");
+						return;
+					}
+					
+				}
+				break;				
 			case eTipoApuesta.TRUCO:
 				
 				this.apuestasTruco.push(apuesta.codigo);
@@ -496,7 +575,6 @@ class Mano {
 				{
 
 					this.bDisputaTruco = false;
-					this.iJugadorActual = this.iIniciadorTrucoParcial;		
 					
 					// No espera respuesta, Puede ser que haya dado por vencido o continue
 					if (apuesta.opciones.dadoPorVencido){
@@ -511,12 +589,10 @@ class Mano {
 						this.conQueContinuo();
 
 					}
-
+					else
+						this.iJugadorActual = this.iIniciadorTrucoParcial;	
 					
 				}
-			
-				
-			
 				break;
 				
 		}
@@ -548,6 +624,49 @@ class Mano {
 	
 	}
 	
+	_tieneFlor(iJugador){
+		let cartasMismoPalo = true;
+		let palo;
+		for (let i = 0; i < this.jugadores[iJugador].cartas.length; i++){
+			if (palo == null) 
+				palo = this.jugadores[iJugador].cartas[i].palo;
+			else
+				if (palo !=  this.jugadores[iJugador].cartas[i].palo) cartasMismoPalo = false;
+		}
+		return cartasMismoPalo;
+
+	}
+
+	_ganadorFlor(){
+		
+		let puntajeMasAlto = 0;
+		let jugadorPuntajMasAlto = 0;
+		for (let i = 0, j = this.iIniciadorEnvido; i < this.jugadores.length; i++, j++){
+			
+			if (j >= this.jugadores.length) j = 0;
+			
+			//Calculo del envido con cartas en mano y en mesa
+			let cartas;
+			if (this.cartasEnMesa[0][j] == null)
+				cartas = this.jugadores[j].cartas
+			else
+				cartas = this.jugadores[j].cartas.concat(this.cartasEnMesa[0][j]);
+			
+			let puntaje = this._valorFlor(cartas);
+			if (puntaje > puntajeMasAlto){
+				console.log(`${this.jugadores[j].nombre} canta: ${puntaje}.`);
+				puntajeMasAlto = puntaje;
+				jugadorPuntajMasAlto = j;
+			}
+			else{
+				console.log(`${this.jugadores[j].nombre} canta: Son Buenas.`);
+			}
+		}
+		
+		return jugadorPuntajMasAlto;
+		
+	}
+	
 	_ganadorEnvido(){
 		
 		let puntajeMasAlto = 0;
@@ -573,7 +692,17 @@ class Mano {
 		return jugadorPuntajMasAlto;
 		
 	}
-	
+	_valorFlor(cartasJugador){
+		
+		let puntaje = 0;
+		for (let i = 0; i < cartasJugador.length; i++){
+			puntaje += cartasJugador[i].valorEnvido();
+		}
+		puntaje += 20;
+		
+		return puntaje;
+	}
+		
 	_valorEnvido(cartasJugador){
 		
 		let cartasMismoPalo = [];
@@ -629,9 +758,14 @@ class Mano {
 				
 				let apuesta = ColeccionApuestas[i];
 				
-				if (apuesta.opciones.tipo == eTipoApuesta.ENVIDO && this.iRondaActual != '') continue;
-				if (apuesta.codigo == 10 && (this.iIniciadorTruco%2 == this.iJugadorActual%2)) continue;
+				if (apuesta.opciones.tipo == eTipoApuesta.ENVIDO && this.iRondaActual != '') continue; //Solo puede cantarse envido en la primer ronda
+				if (apuesta.opciones.tipo == eTipoApuesta.ENVIDO && this.bYaSeDisputoEnvidoFlor) continue; //No puede cantarse envido si ya se jugo
+				if (apuesta.codigo == 10 && (this.iIniciadorTruco%2 == this.iJugadorActual%2)) continue; //Si es el que inicio el truco no puede cantar el siguiente
 				if (apuesta.codigo == 11 && (this.iIniciadorTruco%2 != this.iJugadorActual%2)) continue;
+				if (apuesta.opciones.tipo == eTipoApuesta.FLOR && !this._tieneFlor(this.iJugadorActual)) continue; //Si no se juega con flor, no estan disponibles las opciones, y si ya tiro una carta no puede cantar flor
+				if (apuesta.opciones.tipo == eTipoApuesta.FLOR && this.bYaSeDisputoEnvidoFlor) continue; //No puede cantarse envido si ya se jugo
+				if (apuesta.opciones.tipo == eTipoApuesta.FLOR && !this._conFlor) continue; //Si no se juega con flor, no se puede cantar
+				
 				
 				apuestas.push(apuesta);
 			}
@@ -647,7 +781,7 @@ class Mano {
 		
 		//Tratamiento de la falta
 		for (let i = 0; i < apuestas.length - 1; i++){
-			if (apuestas[i] == 4 && apuestas[i + 1] == 6){ //Se cantó la falta
+			if ((apuestas[i] == 4 && apuestas[i + 1] == 6) || ((apuestas[i] == 18 && apuestas[i + 1] == 19))){ //Se cantó la falta
 				
 				let iJugadorMayoPuntaje;
 				let mayorPuntaje = 0;
@@ -841,7 +975,8 @@ class Apuesta {
 
 var eTipoApuesta = {
 	TRUCO: 1,
-	ENVIDO: 2
+	ENVIDO: 2,
+	FLOR: 3
 }
 
 class OpcionesApuestas {
@@ -853,6 +988,7 @@ class OpcionesApuestas {
 }
 var opcionesEnvido = new OpcionesApuestas(eTipoApuesta.ENVIDO, true, false);
 var opcionesTruco = new OpcionesApuestas(eTipoApuesta.TRUCO, true, false);
+var opcionesFlor = new OpcionesApuestas(eTipoApuesta.FLOR, true, false);
 
 var ColeccionApuestas = {
 	'1': new Apuesta(1,'Envido', opcionesEnvido),
@@ -870,35 +1006,47 @@ var ColeccionApuestas = {
 	'13': new Apuesta(13,'Quiero', new OpcionesApuestas(eTipoApuesta.TRUCO, false, false)),// Retruco
 	'14': new Apuesta(14,'Quiero', new OpcionesApuestas(eTipoApuesta.TRUCO, false, false)),// Vale Cuatro
 	'15': new Apuesta(15,'No Quiero', new OpcionesApuestas(eTipoApuesta.TRUCO, false, true)), //
-	'16': new Apuesta(16,'Envido'),
-	'17': new Apuesta(17,'Envido')
+	'16': new Apuesta(16,'Flor', opcionesFlor),
+	'17': new Apuesta(17,'Contraflor', opcionesFlor),
+	'18': new Apuesta(18,'Contraflor al resto', opcionesFlor),
+	'19': new Apuesta(19,'Quiero', new OpcionesApuestas(eTipoApuesta.FLOR, false, false)),
+	'20': new Apuesta(20,'No Quiero', new OpcionesApuestas(eTipoApuesta.FLOR, false, true))
 }
 
 //Carga de matriz de adyacencias
 var matrizApuestas = [];
-//						0	1	2	3	4	5	6	7	8	9	10	11	12	13	14	15
-matrizApuestas[0] = [	'',	1,	'',	1,	1,	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	''];
-matrizApuestas[1] = [	'',	'',	1,	1,	1,	0,	1,	'',	'',	'',	'',	'',	'',	'',	'',	''];
-matrizApuestas[2] = [	'',	'',	'',	2,	2,	0,	2,	'',	'',	'',	'',	'',	'',	'',	'',	''];
-matrizApuestas[3] = [	'',	'',	'',	'',	3,	0,	3,	'',	'',	'',	'',	'',	'',	'',	'',	''];
-matrizApuestas[4] = [	'',	'',	'',	'',	'',	0,	5,	'',	'',	'',	'',	'',	'',	'',	'',	''];
-matrizApuestas[5] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	''];
-matrizApuestas[6] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	''];
-matrizApuestas[7] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	''];
-matrizApuestas[8] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	''];
-matrizApuestas[9] = [	'',	1,	'',	1,	1,	'',	'',	'',	'',	'',	1,	'',	1,	'',	'',	0];
-matrizApuestas[10] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	1,	'',	0];
-matrizApuestas[11] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	0];
-matrizApuestas[12] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	0,	'',	'',	'',	'',	''];
-matrizApuestas[13] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	0,	'',	'',	'',	''];
-matrizApuestas[14] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
-matrizApuestas[15] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
-
+//						0	1	2	3	4	5	6	7	8	9	10	11	12	13	14	15	16	17	18	19	20
+matrizApuestas[0] = [	'',	1,	'',	1,	1,	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	'',	3,	'',	'',	'',	''];
+matrizApuestas[1] = [	'',	'',	1,	1,	1,	0,	1,	'',	'',	'',	'',	'',	'',	'',	'',	'',	2,	'',	'',	'',	''];
+matrizApuestas[2] = [	'',	'',	'',	2,	2,	0,	2,	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
+matrizApuestas[3] = [	'',	'',	'',	'',	3,	0,	3,	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
+matrizApuestas[4] = [	'',	'',	'',	'',	'',	0,	5,	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
+matrizApuestas[5] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
+matrizApuestas[6] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
+matrizApuestas[7] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
+matrizApuestas[8] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
+matrizApuestas[9] = [	'',	1,	'',	1,	1,	'',	'',	'',	'',	'',	1,	'',	1,	'',	'',	0,	3,	'',	'',	'',	''];
+matrizApuestas[10] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	1,	'',	0,	'',	'',	'',	'',	''];
+matrizApuestas[11] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	0,	'',	'',	'',	'',	''];
+matrizApuestas[12] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	0,	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
+matrizApuestas[13] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	0,	'',	'',	'',	'',	'',	'',	'',	'',	''];
+matrizApuestas[14] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
+matrizApuestas[15] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
+matrizApuestas[16] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	1,	1,	0];
+matrizApuestas[17] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	2,	2,	0];
+matrizApuestas[18] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	5,	0];
+matrizApuestas[19] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
+matrizApuestas[20] = [	'',	'',	'',	'',	'',	'',	'',	'',	'',	1,	'',	'',	'',	'',	'',	'',	'',	'',	'',	'',	''];
 
 var _jugadores = [];
 var juego;
+var _iniciadoJuego = false;
+var _jugarConFlor = false;
 
 function IngresarJugador(mailJugador){
+	
+	if (_iniciadoJuego) return;
+	
 	if (_jugadores.length == 2) {
 		console.log('No se permiten mas jugadores.');
 	}
@@ -910,17 +1058,44 @@ function IngresarJugador(mailJugador){
 		console.log('No es una direccion de email válida, ingrese nuevamente.');
 	}
 	if (_jugadores.length == 1) console.log("Ahora falta solo un jugador.");
-	if (_jugadores.length == 2) juego = new Juego(_jugadores[0], _jugadores[1]);
 	
+	if (_jugadores.length == 2) {
+		juego = new Juego(_jugadores[0], _jugadores[1]);
+		_iniciadoJuego = true;
+	}
+}
+
+function JugarConFlor(){
+	
+	if (_iniciadoJuego) return;
+	
+	_jugarConFlor = true;
+	console.log("Jugando con Flor");
+	console.log("");
+	console.log('Para poder jugar, necesito ingreses el mail de los dos jugadores, para poder identificarlos.');
+	console.log('');
+	console.log('Para ingresar los jugadores utiliza el metodo \'IngresarJugador()\'');
+}
+
+function JugarSinFlor(){
+	
+	if (_iniciadoJuego) return;
+	
+	_jugarConFlor = false;
+	console.log("Jugando con Flor");
+	console.log("");
+	console.log('Para poder jugar, necesito ingreses el mail de los dos jugadores, para poder identificarlos.');
+	console.log('');
+	console.log('Para ingresar los jugadores utiliza el metodo IngresarJugador()');
 }
 
 /******* INICIO ****/
 
-console.log('Estas invitado a jugar una partida de Truco.');
-console.log('Solo tienen que ser dos jugadores en la misma maquina.');
-console.log('Y me tienes que pasar el mail de los dos jugadores, para poder identificarlos.');
-console.log('');
-console.log('Para ingresar los jugadores utiliza el metodo IngresarJugador()');
+console.log('Bienvenido a Truco para dos Personas.');
+console.log('¿Desean jugar con flor? Indicamelo con el metodo \'JugarConFlor()\' o \'JugarSinFlor()\'');
+
+
+
 
 
 

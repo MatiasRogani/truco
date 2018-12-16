@@ -2,32 +2,36 @@
 <script src="Truco.js"></script>
 <script>
 
-	// Test FaltaEnvido3
-	// Jugadores en Buenas
-	// el jugador o pareja ganadora se lleva los puntos que le faltan al jugador o pareja con más puntos para conseguir el chico.
+
+
+// Test Flor7
+
 	{	
-	let juego = new Juego("Matias", "Anto")
-	
-	juego.jugadores[0].cartas = [cartas[24], cartas[8], cartas[12]];
-	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
-	
-	juego.jugadores[1].puntajeMalas = 14;
-	
-	juego.jugadores[0].puntajeMalas = 15;
-	juego.jugadores[0].puntajeBuenas = 10;
+	let juego = new Juego("Matias", "Anto", true)
 	
 	
-	juego.TirarCarta(1);
-	juego.CantarApuesta("Falta Envido");
-	juego.CantarApuesta("Quiero");
 	
-	console.assert(juego.jugadores[1].puntajeMalas == 15, 'Falla test FaltaEnvido3'); 
-	console.assert(juego.jugadores[1].puntajeBuenas == 4, 'Falla test FaltaEnvido3'); 
-	console.assert(juego.jugadores[0].puntajeMalas == 15, 'Falla test FaltaEnvido3');	
-	console.assert(juego.jugadores[0].puntajeBuenas == 10, 'Falla test FaltaEnvido3');
+	juego.jugadores[0].cartas = [cartas[5], cartas[9], cartas[13]];
+	juego.jugadores[1].cartas = [cartas[3], cartas[4], cartas[28]];
+	
+	juego.Ver();
+	
+	juego.CantarApuesta("Flor");
+	juego.CantarApuesta("ContraFlor al resto");
+	juego.CantarApuesta("quiero");
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 15, 'Falla test Flor7'); 
+	console.assert(juego.jugadores[1].puntajeBuenas == 15, 'Falla test Flor7'); 
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Flor7');		
 	
 	
-	}	
+	
+	}
+
+
+
+	
+	
 
 </script>
 

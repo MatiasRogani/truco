@@ -178,14 +178,83 @@
 	juego.jugadores[1].cartas = [cartas[13], cartas[9], cartas[5]];
 	
 	juego.CantarApuesta("Envido");
-	juego.CantarApuesta("quiero");	
+	juego.CantarApuesta("quiero");
 	
 	console.assert(juego.jugadores[1].puntajeMalas == 2, 'Falla test Envido6'); //Recordar que cambia de Juego!! Asi que invierten jugadores
 	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Envido6');	
 	
+	console.assert(juego._mano._valorEnvido(juego.jugadores[1].cartas) == 25, 'Falla test Envido6 - b'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego._mano._valorEnvido(juego.jugadores[0].cartas) == 23, 'Falla test Envido6 - b');		
+	
+	
 	}	
+	// Test Envido7
+	{	
+	let juego = new Juego("Matias", "Anto")
 	
+	juego.jugadores[0].cartas = [cartas[12], cartas[8], cartas[6]];
+	juego.jugadores[1].cartas = [cartas[13], cartas[9], cartas[5]];
 	
+	juego.CantarApuesta("truco");
+	juego.CantarApuesta("Envido");
+	juego.CantarApuesta("quiero");	
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 2, 'Falla test Envido7'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Envido7');	
+	
+	juego.CantarApuesta("No quiero");
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 1, 'Falla test Envido7 - b'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[0].puntajeMalas == 2, 'Falla test Envido7 - b');	
+	
+	}		
+	// Test Envido8
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego.jugadores[0].cartas = [cartas[12], cartas[8], cartas[6]];
+	juego.jugadores[1].cartas = [cartas[13], cartas[9], cartas[5]];
+	
+	juego.TirarCarta(1);
+	juego.CantarApuesta("Envido");
+	juego.CantarApuesta("quiero");	
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 2, 'Falla test Envido8'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Envido8');	
+	
+	juego.CantarApuesta("truco");
+	juego.CantarApuesta("no quiero");
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 0, 'Falla test Envido8 - b'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[0].puntajeMalas == 3, 'Falla test Envido8 - b');	
+	
+	}	
+	// Test Envido9
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego.jugadores[0].cartas = [cartas[12], cartas[8], cartas[6]];
+	juego.jugadores[1].cartas = [cartas[13], cartas[9], cartas[5]];
+	
+	juego.CantarApuesta("truco");
+	juego.CantarApuesta("Envido");
+	juego.CantarApuesta("quiero");	
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 2, 'Falla test Envido9'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Envido9');	
+	
+	juego.CantarApuesta("quiero");
+	
+	juego.TirarCarta(2);
+	juego.TirarCarta(3);
+	
+	juego.TirarCarta(2);
+	juego.TirarCarta(1);
+	
+	console.assert(juego.jugadores[0].puntajeMalas == 4, 'Falla test Envido9 - b'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[1].puntajeMalas == 0, 'Falla test Envido9 - b');	
+	
+	}		
 // Test Truco1
 	{	
 	let juego = new Juego("Matias", "Anto")
@@ -222,6 +291,32 @@
 
 	}	
 	
+// Test Truco2
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego.jugadores[0].cartas = [cartas[4], cartas[8], cartas[12]];
+	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
+	
+	juego.TirarCarta(2);
+	
+	juego.CantarApuesta("truco");
+	juego.CantarApuesta("no quiero");
+	
+	console.assert(juego.jugadores[0].puntajeMalas == 1, 'Falla test Truco2'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[1].puntajeMalas == 0, 'Falla test Truco2');
+	
+	juego.TirarCarta(1);
+
+	juego.CantarApuesta("truco");
+	juego.CantarApuesta("retruco");
+	juego.CantarApuesta("no quiero");
+	
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Truco2 - b'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[1].puntajeMalas == 3, 'Falla test Truco2 - b');	
+
+	}		
+	
 // Test MeVoy1
 	{	
 	let juego = new Juego("Matias", "Anto")
@@ -238,9 +333,19 @@
 	
 	juego.MeVoyAlMaso();
 	
-	console.assert(juego.jugadores[1].puntajeMalas == 3, 'Falla test MeVoy1'); //Recordar que cambia de Juego!! Asi que invierten jugadores
-	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test MeVoy1');	
+	console.assert(juego.jugadores[1].puntajeMalas == 3, 'Falla test MeVoy1 - b'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test MeVoy1 - b');	
 	
+	juego.CantarApuesta("Truco");
+	juego.CantarApuesta("Retruco");
+	juego.CantarApuesta("Quiero");
+	
+	juego.TirarCarta(1);
+	
+	juego.MeVoyAlMaso();
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 3, 'Falla test MeVoy1 - c'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego.jugadores[0].puntajeMalas == 3, 'Falla test MeVoy1 - c');		
 	
 	}		
 
@@ -379,5 +484,170 @@
 	
 	
 	}	
+	
+// Test Flor1
+
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego._mano._conFlor = true;
+	
+	juego.jugadores[0].cartas = [cartas[4], cartas[8], cartas[12]];
+	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[24]];
+	
+	juego.Ver();
+	juego.CantarApuesta("Flor");
+	
+	console.assert(juego.jugadores[0].puntajeMalas == 3, 'Falla test Flor1'); 
+	console.assert(juego.jugadores[1].puntajeMalas == 0, 'Falla test Flor1');		
+	
+	}
+// Test Flor2
+
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego._mano._conFlor = true;
+	
+	juego.jugadores[0].cartas = [cartas[4], cartas[8], cartas[12]];
+	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
+	
+	juego.Ver();
+	juego.CantarApuesta("Flor");
+	juego.CantarApuesta("ContraFlor");
+	juego.CantarApuesta("No Quiero");
+	
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Flor2'); 
+	console.assert(juego.jugadores[1].puntajeMalas == 4, 'Falla test Flor2');		
+	
+	}
+
+// Test Flor3
+
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego._mano._conFlor = true;
+	
+	juego.jugadores[0].cartas = [cartas[24], cartas[8], cartas[21]];
+	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
+	
+	juego.Ver();
+	
+	juego.TirarCarta(1);
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 3, 'Falla test Flor3'); 
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Flor3');		
+	
+	}
+
+// Test Flor4
+
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego._mano._conFlor = true;
+	
+	juego.jugadores[0].cartas = [cartas[24], cartas[8], cartas[21]];
+	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
+	
+	juego.Ver();
+	
+	juego.CantarApuesta("Truco");
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 3, 'Falla test Flor4'); 
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Flor4');		
+	
+	}
+// Test Flor4
+
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego._mano._conFlor = true;
+	
+	juego.jugadores[0].cartas = [cartas[24], cartas[8], cartas[21]];
+	juego.jugadores[1].cartas = [cartas[5], cartas[9], cartas[13]];
+	
+	juego.Ver();
+	
+	juego.CantarApuesta("Truco");
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 3, 'Falla test Flor4'); 
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Flor4');		
+	
+	}
+	
+// Test Flor5
+
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego._mano._conFlor = true;
+	
+	juego.jugadores[0].cartas = [cartas[5], cartas[9], cartas[13]];
+	juego.jugadores[1].cartas = [cartas[3], cartas[4], cartas[28]];
+	
+	juego.Ver();
+	
+	juego.CantarApuesta("Flor");
+	juego.CantarApuesta("ContraFlor");
+	juego.CantarApuesta("No quiero");
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 4, 'Falla test Flor4'); 
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Flor4');		
+	
+	}	
+// Test Flor6
+
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego._mano._conFlor = true;
+	
+	juego.jugadores[0].cartas = [cartas[5], cartas[9], cartas[13]];
+	juego.jugadores[1].cartas = [cartas[3], cartas[4], cartas[28]];
+	
+	juego.Ver();
+	
+	console.assert(juego._mano._valorFlor(juego.jugadores[1].cartas) == 36, 'Falla test Flor6'); //Recordar que cambia de Juego!! Asi que invierten jugadores
+	console.assert(juego._mano._valorFlor(juego.jugadores[0].cartas) == 26, 'Falla test Flor6');		
+	
+	juego.CantarApuesta("Flor");
+	juego.CantarApuesta("ContraFlor");
+	juego.CantarApuesta("quiero");
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 6, 'Falla test Flor6'); 
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Flor6');		
+	
+	
+	
+	}
+// Test Flor7
+
+	{	
+	let juego = new Juego("Matias", "Anto")
+	
+	juego._mano._conFlor = true;
+	
+	juego.jugadores[0].cartas = [cartas[5], cartas[9], cartas[13]];
+	juego.jugadores[1].cartas = [cartas[3], cartas[4], cartas[28]];
+	
+	juego.Ver();
+	
+	juego.CantarApuesta("Flor");
+	juego.CantarApuesta("ContraFlor al resto");
+	juego.CantarApuesta("quiero");
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 15, 'Falla test Flor7'); 
+	console.assert(juego.jugadores[1].puntajeBuenas == 15, 'Falla test Flor7'); 
+	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Flor7');		
+	
+	
+	
+	}
+	
+	
+	
 	
 </script>
