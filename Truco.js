@@ -62,6 +62,7 @@ class Juego {
 		console.log(' juego.VerMano()');
 		console.log(' juego.VerApuestas()');
 		console.log(' juego.VerJugadorEnTurno()');
+		console.log(' juego.VerSugerencias()');
 
 		console.log('');
 		
@@ -107,6 +108,7 @@ class Juego {
 			this.CantarApuesta = nuevaMano.CantarApuesta.bind(nuevaMano);
 			this.MeVoyAlMaso = nuevaMano.MeVoyAlMaso.bind(nuevaMano);
 			this.Ver =  nuevaMano.Ver.bind(nuevaMano);
+			this.VerSugerencias = nuevaMano.VerSugerencias.bind(nuevaMano);
 	
 		}
 		else{
@@ -323,6 +325,7 @@ class Mano {
 		console.log(' juego.VerMano()');
 		console.log(' juego.VerApuestas()');
 		console.log(' juego.VerJugadorEnTurno()');
+		console.log(' juego.VerSugerencias()');
 		console.log('');		
 	}
 
@@ -394,6 +397,21 @@ class Mano {
 			console.log(this.jugadores[this.iJugadorActual].nombre)
 		}
 	}
+	VerSugerencias(){
+		
+		if (this.iJugadorActual == null) return;
+		
+		// Cantar “truco” durante la disputa de la tercera baza, si la probabilidad de ganar es mayor que 0,7.
+		if (this.iRondaActual == 2 && this._probabilidadDeGanarTruco() > 0.7) console.log("Le recomiendo cantar TRUCO!");
+		
+		// Cantar “falta envido”, si la probabilidad de ganarla es mayor que 0,6.
+		if (this.iRondaActual == 0 && this._probabilidadDeGanarEnvido() > 0.7) console.log("Le recomiendo cantar FALTA ENVIDO!");
+		
+		// Perder la primera baza, con el objeto de “confundir” al adversario, si la probabilidad de ganar el truco es mayor que 0,8.
+		if (this.iRondaActual == 0 && this._probabilidadDeGanarTruco() > 0.8) console.log("Le recomiendo PERDER LA PRIMER BAZA PARA CONFUNDIR!");
+		
+	}
+	
 	TirarCarta(nroCarta){
 		
 		if (this.iJugadorActual == null) return;
@@ -622,6 +640,46 @@ class Mano {
 		
 		this.conQueContinuo();
 	
+	}
+	
+	_probabilidadDeGanarEnvido(){
+		
+		let cartas;
+		if (this.cartasEnMesa[this.iRondaActual][this.iJugadorActual] == null)
+			cartas = this.jugadores[this.iJugadorActual].cartas
+		else
+			cartas = this.jugadores[this.iJugadorActual].cartas.concat(this.cartasEnMesa[this.iRondaActual][this.iJugadorActual])
+		
+		let valor = this._valorEnvido(cartas);
+		return valor / 33;
+		
+	}
+	_probabilidadDeGanarTruco(){
+		
+		let probabilidad = 1;
+		
+		//Tomamos las dos cartas mas altas
+		let cartasOrdenadas = this.jugadores[this.iJugadorActual].cartas.slice(0).sort(function(a, b) { return a.power - b.power});
+		cartasOrdenadas.shift(); //Elimina al primero (el mas bajo)
+		
+		
+		for (let i = 0; i < cartasOrdenadas.length; i++){
+			
+			let power = cartasOrdenadas[i].power;
+			
+			let cartasTotales = cartas.length;
+			
+			let cartasMenores = 0;
+			for (let j = 0; j < cartas.length; j++){
+				if (cartas[j].power <= power) cartasMenores++;
+			}
+			
+			probabilidad = probabilidad * cartasMenores / cartasTotales
+			
+		}
+
+		return probabilidad;
+		
 	}
 	
 	_tieneFlor(iJugador){

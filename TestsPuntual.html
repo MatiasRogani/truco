@@ -4,29 +4,35 @@
 
 
 
-// Test Flor7
 
+// Test Sugerencias1
+// Perder la primera baza, con el objeto de “confundir” al adversario, si la probabilidad de ganar el truco es mayor que 0,8.
 	{	
-	let juego = new Juego("Matias", "Anto", true)
+	let juego = new Juego("Matias", "Anto")
 	
+	juego._mano._conFlor = true;
 	
-	
-	juego.jugadores[0].cartas = [cartas[5], cartas[9], cartas[13]];
-	juego.jugadores[1].cartas = [cartas[3], cartas[4], cartas[28]];
+	juego.jugadores[0].cartas = [cartas[2], cartas[9], cartas[13]];
+	juego.jugadores[1].cartas = [cartas[1], cartas[4], cartas[6]];
 	
 	juego.Ver();
+	juego.TirarCarta(1); //A
+	juego.VerSugerencias();
 	
-	juego.CantarApuesta("Flor");
-	juego.CantarApuesta("ContraFlor al resto");
-	juego.CantarApuesta("quiero");
+	juego.TirarCarta(3); //M
 	
-	console.assert(juego.jugadores[1].puntajeMalas == 15, 'Falla test Flor7'); 
-	console.assert(juego.jugadores[1].puntajeBuenas == 15, 'Falla test Flor7'); 
-	console.assert(juego.jugadores[0].puntajeMalas == 0, 'Falla test Flor7');		
+	juego.TirarCarta(2); //A
+	juego.TirarCarta(2); //M
+	juego.VerSugerencias();
 	
+	juego.TirarCarta(1); //M
+	juego.MeVoyAlMaso();
 	
-	
+	console.assert(juego.jugadores[1].puntajeMalas == 0, 'Falla test Sugerencias1'); 
+	console.assert(juego.jugadores[0].puntajeMalas == 1, 'Falla test Sugerencias1');
+
 	}
+	
 
 
 

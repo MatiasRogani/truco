@@ -646,7 +646,35 @@
 	
 	
 	}
+
+
+// Test Sugerencias1
+// Aparecen todas las sugerencias
+	{	
+	let juego = new Juego("Matias", "Anto")
 	
+	juego._mano._conFlor = true;
+	
+	juego.jugadores[0].cartas = [cartas[2], cartas[9], cartas[13]];
+	juego.jugadores[1].cartas = [cartas[1], cartas[4], cartas[6]];
+	
+	juego.Ver();
+	juego.TirarCarta(1); //A
+	juego.VerSugerencias();
+	
+	juego.TirarCarta(3); //M
+	
+	juego.TirarCarta(2); //A
+	juego.TirarCarta(2); //M
+	juego.VerSugerencias();
+	
+	juego.TirarCarta(1); //M
+	juego.MeVoyAlMaso();
+	
+	console.assert(juego.jugadores[1].puntajeMalas == 0, 'Falla test Sugerencias1'); 
+	console.assert(juego.jugadores[0].puntajeMalas == 1, 'Falla test Sugerencias1');
+
+	}
 	
 	
 	
