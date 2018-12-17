@@ -109,7 +109,17 @@ class Juego {
 			this.MeVoyAlMaso = nuevaMano.MeVoyAlMaso.bind(nuevaMano);
 			this.Ver =  nuevaMano.Ver.bind(nuevaMano);
 			this.VerSugerencias = nuevaMano.VerSugerencias.bind(nuevaMano);
-	
+
+			VerMesa = nuevaMano.VerMesa.bind(nuevaMano);
+			VerMano = nuevaMano.VerMano.bind(nuevaMano);
+			VerApuestas = nuevaMano.VerApuestas.bind(nuevaMano);
+			VerJugadorEnTurno = nuevaMano.VerJugadorEnTurno.bind(nuevaMano);
+			TirarCarta = nuevaMano.TirarCarta.bind(nuevaMano);
+			CantarApuesta = nuevaMano.CantarApuesta.bind(nuevaMano);
+			MeVoyAlMaso = nuevaMano.MeVoyAlMaso.bind(nuevaMano);
+			Ver =  nuevaMano.Ver.bind(nuevaMano);
+			VerSugerencias = nuevaMano.VerSugerencias.bind(nuevaMano);
+			
 		}
 		else{
 			
@@ -241,7 +251,9 @@ class Mano {
 						puntaje = this._getPuntajeApuestas(this.apuestasTruco);
 
 					this.jugadores[0].agregarPuntaje(puntaje);
-					console.log(`Ganó la mano el equipo del jugador ${this.jugadores[0].nombre}`);
+					
+					console.clear();
+					console.log(` **** Ganó la mano el equipo del jugador ${this.jugadores[0].nombre} ***`);
 				break;
 				case eFinal.PERDIO:
 					if (this.apuestasTruco.length < 2) //Para evitar que si no se canto ninguna apuesta (length = 0) la matriz no asigne puntaje
@@ -250,7 +262,8 @@ class Mano {
 						puntaje = this._getPuntajeApuestas(this.apuestasTruco);
 					
 					this.jugadores[1].agregarPuntaje(puntaje);
-					console.log(`Ganó la mano el equipo del jugador ${this.jugadores[1].nombre}`);
+					console.clear();
+					console.log(` ***** Ganó la mano el equipo del jugador ${this.jugadores[1].nombre} ****`);
 				break;
 			}
 			
@@ -601,7 +614,8 @@ class Mano {
 						
 						this.jugadores[equipoGanador].agregarPuntaje(this._getPuntajeApuestas(this.apuestasTruco));
 						
-						console.log(`Ganó la mano el equipo del jugador ${this.jugadores[equipoGanador].nombre}`);
+						console.clear();
+						console.log(` *** Ganó la mano el equipo del jugador ${this.jugadores[equipoGanador].nombre} ***`);
 						
 						this.conQueContinuo();
 
@@ -635,7 +649,8 @@ class Mano {
 		
 		this.jugadores[equipoGanador].agregarPuntaje(puntaje);
 		
-		console.log(`Ganó la mano el equipo del jugador ${this.jugadores[equipoGanador].nombre}`);
+		console.clear();
+		console.log(`**** Ganó la mano el equipo del jugador ${this.jugadores[equipoGanador].nombre} ****`);
 		
 		this.conQueContinuo();
 	
@@ -1099,6 +1114,17 @@ var _jugadores = [];
 var juego;
 var _iniciadoJuego = false;
 var _jugarConFlor = false;
+
+var VerMesa;
+var VerMano;
+var VerApuestas;
+var VerJugadorEnTurno;
+var TirarCarta;
+var CantarApuesta;
+var MeVoyAlMaso;
+var Ver;
+var VerSugerencias;
+
 
 function IngresarJugador(mailJugador){
 	
