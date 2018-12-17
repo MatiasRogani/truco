@@ -50,7 +50,7 @@ class Juego {
 		this._iJugadorGanador;
 		this._conFlor = conFlor;
 		
-		//console.clear();
+		console.clear();
 		console.log('');
 		console.log('Para jugar, tiene disponibles los siguientes comandos:');
 		console.log(' juego.Ver() -> Permite ver todo');
@@ -432,11 +432,10 @@ class Mano {
 		//Se coloca en la mesa
 		this.cartasEnMesa[this.iRondaActual][this.iJugadorActual] = carta;
 		
-		//console.clear();
+		console.clear();
+		this.mostrarInstrucciones();
 		
-		//this.mostrarInstrucciones();
-		
-		//console.log(`El jugador ${this.jugadores[this.iJugadorActual].nombre} tiró la carta ${carta.toTexto()}.`);
+		console.log(`El jugador ${this.jugadores[this.iJugadorActual].nombre} tiró la carta ${carta.toTexto()}.`);
 		
 		//Cambio de jugador 
 		this.iJugadorActual++;
@@ -459,8 +458,8 @@ class Mano {
 			return;
 		}
 		
-		//console.clear();
-		//this.mostrarInstrucciones();
+		console.clear();
+		this.mostrarInstrucciones();
 		console.log(`El jugador ${this.jugadores[this.iJugadorActual].nombre} cantó ${apuesta.descripcion}.`);
 		
 		this.iApuestaActual = apuesta.codigo;
